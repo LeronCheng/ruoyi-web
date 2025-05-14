@@ -8,6 +8,7 @@ import lumalayout from '@/views/luma/layout.vue'
 import storelayout from '@/views/store/layout.vue'
 import fanyilayout from '@/views/fanyi/layout.vue'
 import pptlayout from '@/views/ppt/layout.vue'
+import mindmaplayout from '@/views/mindmap/layout.vue'
 import musiclayout from '@/views/suno/layout.vue'
 import knowledgelayout from '@/views/knowledge/layout.vue'
 import wxlayout from '@/views/wxbot/layout.vue'
@@ -56,7 +57,6 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
-    
     path: '/draw',
     name: 'Rootdraw',
     component: mjlayout,
@@ -69,17 +69,16 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
-
   {
-		path: "/fanyi",
-		name: "Fanyi",
-		component: fanyilayout,
-		redirect: "/fanyi/index",
-		children: [
-			{
-				path: "index",
-				name: "fanyi",
-				component: () => import("@/views/fanyi/index.vue"),
+    path: "/fanyi",
+    name: "Fanyi",
+    component: fanyilayout,
+    redirect: "/fanyi/index",
+    children: [
+      {
+        path: "index",
+        name: "fanyi",
+        component: () => import("@/views/fanyi/index.vue"),
 			},
 		],
 	},
@@ -94,6 +93,20 @@ const routes: RouteRecordRaw[] = [
 				path: "index",
 				name: "ppt",
 				component: () => import("@/views/ppt/index.vue"),
+			},
+		],
+	},
+
+  {
+		path: "/mindmap",
+		name: "Mindmap",
+		component: mindmaplayout,
+		redirect: "/mindmap/index",
+		children: [
+			{
+				path: "index",
+				name: "mindmap",
+				component: () => import("@/views/mindmap/index.vue"),
 			},
 		],
 	},

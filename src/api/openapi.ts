@@ -194,6 +194,7 @@ interface subModelType{
     uuid?:string|number
     chatType: number
     appId: string
+    inputs: any[]
 }
 function getHeaderAuthorization(){
     // if(!gptServerStore.myData.OPENAI_API_KEY){
@@ -248,7 +249,8 @@ export const subModel= async (opt: subModelType)=>{
            ,stream:true
            ,kid:gptConfigStore.myData.kid
            ,chat_type: opt.chatType
-           ,appId: opt.appId
+        , appId: opt.appId
+        ,inputs : opt.inputs
         }
 
         let headers=   {'Content-Type': 'application/json;charset=UTF-8',
@@ -257,7 +259,7 @@ export const subModel= async (opt: subModelType)=>{
         headers={...headers,...getHeaderAuthorization()}
         try {
             let url = "/chat/send"
-         await fetchSSE( gptGetUrl(url),{
+            await fetchSSE( gptGetUrl(url),{
             method: 'POST',
             headers: headers,
             signal:opt.signal,

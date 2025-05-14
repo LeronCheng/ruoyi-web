@@ -13,8 +13,8 @@ const appStore = useAppStore()
 const chatStore = useChatStore()
 const authStore = useAuthStore()
 
-router.replace({ name: 'Knowledge', params: { uuid: chatStore.active } })
-homeStore.setMyData({ local: 'knowledge' })
+router.replace({ name: 'mindmap', params: { uuid: chatStore.active } })
+homeStore.setMyData({ local: 'mindmap' })
 const { isMobile } = useBasicLayout()
 
 const collapsed = computed(() => appStore.siderCollapsed)
@@ -42,7 +42,6 @@ const getContainerClass = computed(() => {
             <component :is="Component" :key="route.fullPath" />
           </RouterView>
         </NLayoutContent>
-        <!-- <Sider /> -->
       </NLayout>
     </div>
     <Permission :visible="needPermission" />
@@ -50,7 +49,7 @@ const getContainerClass = computed(() => {
   <aiMobileMenu v-if="isMobile" />
   <aiFooter />
 </template>
-<style  >
+<style>
 .h55 {
   height: calc(100% - 55px);
 }
