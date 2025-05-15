@@ -22,7 +22,7 @@ const loading = computed(() => {
 
 const text = ref('')
 const gen = ref('')
-const selectedModel = ref('deepseek')
+const selectedModel = ref('claude')
 const selectedColor = ref('蓝色')
 
 const colorOptions = [
