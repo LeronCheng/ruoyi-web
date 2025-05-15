@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch, onUnmounted } from 'vue'
+import { nextTick, onMounted, ref, watch, computed, onUnmounted } from 'vue'
 import { Transformer } from 'markmap-lib'
+import { useAuthStore, useAppStore } from '@/store'
 import { Markmap } from 'markmap-view'
 import { NButton } from 'naive-ui'
 import mermaid from 'mermaid'
@@ -22,6 +23,7 @@ const props = defineProps({
   }
 })
 
+const appStore = useAppStore()
 const markmapSvg = ref<SVGElement | null>(null)
 const markmap = ref<any>(null)
 const mermaidContainer = ref<HTMLElement | null>(null)
@@ -170,7 +172,6 @@ const renderMarkmap = () => {
     const { root } = transformer.transform(props.genText)
 
     markmap.value = Markmap.create(el, undefined, root)
-    console.log('Markmap rendered with content length:', props.genText.length)
   } catch (error) {
     console.error('Markmap rendering error:', error)
     if (markmapSvg.value) {
@@ -278,10 +279,22 @@ const cleanupEventListeners = () => {
   document.removeEventListener('mouseup', endDrag)
 }
 
+const getCurrClass = computed<CSSProperties>(() => {
+  return {
+    color: '#232627',
+    backgroundColor: '#ffffff'
+  }
+})
+
+const getCurr1Class = computed<CSSProperties>(() => {
+  return {
+    color: '#232627'
+  }
+})
+
 watch(
   () => [props.genText, props.diagramType],
   () => {
-    console.log('genText or diagramType changed in MindMap component')
     // 在重新渲染前清理事件监听器
     cleanupEventListeners()
     renderContent()
@@ -358,26 +371,26 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="dot-bg w-full h-full relative">
+  <div class="dot-bg w-full h-full relative" :style="getCurrClass">
     <div class="top-4 z-10 flex left-2 absolute flex-wrap justify-center gap-2">
-      <NButton text @click="onZoomIn">
+      <NButton text @click="onZoomIn" :style="getCurrClass">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-2xl">
           <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14z" />
           <path fill="currentColor" d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z" />
         </svg>
       </NButton>
-      <NButton text @click="onZoomOut">
+      <NButton text @click="onZoomOut" :style="getCurrClass">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-2xl">
           <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14z" />
           <path fill="currentColor" d="M7 9v1h5V9H7z" />
         </svg>
       </NButton>
-      <NButton text @click="onZoomFill">
+      <NButton text @click="onZoomFill" :style="getCurrClass">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-2xl">
           <path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
         </svg>
       </NButton>
-      <NButton round size="small" @click="downPng">
+      <NButton round size="small" @click="downPng" :style="getCurrClass" style="border: 1px solid #eee">
         <template #icon>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-lg">
             <path fill="currentColor" d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7l7-7z" />
@@ -385,7 +398,7 @@ onUnmounted(() => {
         </template>
         PNG
       </NButton>
-      <NButton round size="small" @click="downSvg">
+      <NButton round size="small" @click="downSvg" :style="getCurrClass" style="border: 1px solid #eee">
         <template #icon>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-lg">
             <path fill="currentColor" d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7l7-7z" />
@@ -393,7 +406,7 @@ onUnmounted(() => {
         </template>
         SVG
       </NButton>
-      <NButton round size="small" @click="downPdf">
+      <NButton round size="small" @click="downPdf" :style="getCurrClass" style="border: 1px solid #eee">
         <template #icon>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-lg">
             <path fill="currentColor" d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7l7-7z" />
@@ -411,7 +424,7 @@ onUnmounted(() => {
       <div class="text-gray-400">在左侧输入内容，然后点击渲染按钮</div>
     </div>
 
-    <div id="mindmap-view" class="h-full w-full pt-12">
+    <div id="mindmap-view" class="h-full w-full pt-12" :style="getCurr1Class">
       <!-- Markmap 容器 -->
       <svg ref="markmapSvg" id="mindmap" class="h-full w-full" :style="{ display: props.diagramType === 'markdown' ? 'block' : 'none' }"></svg>
 

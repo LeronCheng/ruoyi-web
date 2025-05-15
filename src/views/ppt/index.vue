@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { defineAsyncComponent, ref, onMounted, watch } from 'vue'
+import { defineAsyncComponent, ref, onMounted, watch, computed } from 'vue'
 // import LoginTip from '@/views/user/LoginTip.vue'
 import { useChat } from '../chat/hooks/useChat'
-import { useAuthStore } from '@/store'
+import { useAuthStore, useAppStore } from '@/store'
 import { mlog, subModel } from '@/api'
 const { addChat, updateChatSome } = useChat()
 
+const appStore = useAppStore()
 const authStore = useAuthStore()
 const Sider = defineAsyncComponent(() => import('./components/Sider.vue'))
 const MindMap = defineAsyncComponent(() => import('./components/MindMap.vue'))
@@ -20,6 +21,18 @@ const controller = ref<AbortController>()
 const text = ref('')
 const genText = ref('')
 const loading = ref(false)
+
+const getCurrClass = computed<CSSProperties>(() => {
+  if (appStore.theme == 'dark') {
+    return {
+      backgroundColor: '#232627'
+    }
+  } else {
+    return {
+      backgroundColor: '#fff'
+    }
+  }
+})
 
 // 监视 genText 的变化
 async function onGenerate(text: string, model: string, color: string) {
@@ -156,7 +169,7 @@ function onRender(text: string) {
   <div v-if="!authStore.token" class="w-full h-full">
     <!-- <LoginTip /> -->
   </div>
-  <div v-else class="w-full flex h-full" style="backgroundColor: #fff">
+  <div v-else class="w-full flex h-full" :style="getCurrClass">
     <Sider :genText="genText" :loading="loading" @generate="onGenerate" @render="onRender" />
     <MindMap :genText="genText" :loading="loading" />
   </div>

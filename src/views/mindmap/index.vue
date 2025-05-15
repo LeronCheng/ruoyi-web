@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { defineAsyncComponent, ref, onMounted, watch } from 'vue'
+import { defineAsyncComponent, ref, onMounted, watch, computed } from 'vue'
 // import LoginTip from '@/views/user/LoginTip.vue'
-import { useAuthStore } from '@/store'
+import { useAuthStore, useAppStore } from '@/store'
 import { mlog, subModel } from '@/api'
 
 const authStore = useAuthStore()
+const appStore = useAppStore()
 const Sider = defineAsyncComponent(() => import('./components/Sider.vue'))
 const MindMap = defineAsyncComponent(() => import('./components/MindMap.vue'))
 
@@ -18,6 +19,18 @@ const text = ref('')
 const genText = ref('')
 const loading = ref(false)
 const diagramType = ref('markdown') // 默认为 markdown
+
+const getCurrClass = computed<CSSProperties>(() => {
+  if (appStore.theme == 'dark') {
+    return {
+      backgroundColor: '#232627'
+    }
+  } else {
+    return {
+      backgroundColor: '#fff'
+    }
+  }
+})
 
 // 监视 genText 的变化
 async function onGenerate(text: string) {
@@ -147,7 +160,7 @@ async function onDiagramTypeChange(type: string) {
   <div v-if="!authStore.token" class="w-full h-full">
     <!-- <LoginTip /> -->
   </div>
-  <div v-else class="w-full flex h-full" style="backgroundColor: #fff">
+  <div v-else class="w-full flex h-full" :style="getCurrClass">
     <Sider :genText="genText" :loading="loading" @generate="onGenerate" @render="onRender" @diagramTypeChange="onDiagramTypeChange" />
     <MindMap :genText="genText" :loading="loading" :diagramType="diagramType" />
   </div>
