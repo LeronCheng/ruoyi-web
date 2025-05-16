@@ -164,7 +164,7 @@ const handleSelect = (key: string) => {
           </n-tooltip>
         </a>
 
-        <a @click="urouter.push(`/music`)" class=" router-link-exact-active h-10 w-10 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
+        <!-- <a @click="urouter.push(`/music`)" class=" router-link-exact-active h-10 w-10 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
           <n-tooltip placement="right" trigger="hover">
             <template #trigger>
               <div class="flex h-full justify-center items-center   py-1 flex-col">
@@ -173,9 +173,9 @@ const handleSelect = (key: string) => {
             </template>
             音乐
           </n-tooltip>
-        </a>
+        </a> -->
 
-        <a @click="urouter.push(`/video`)" class=" router-link-exact-active h-10 w-10 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
+        <!-- <a @click="urouter.push(`/video`)" class=" router-link-exact-active h-10 w-10 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
           <n-tooltip placement="right" trigger="hover">
             <template #trigger>
               <div class="flex h-full justify-center items-center   py-1 flex-col">
@@ -184,7 +184,7 @@ const handleSelect = (key: string) => {
             </template>
             视频
           </n-tooltip>
-        </a>
+        </a> -->
 
         <a @click="urouter.push(`/ppt`)" class=" router-link-exact-active h-10 w-10 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
           <n-tooltip placement="right" trigger="hover">

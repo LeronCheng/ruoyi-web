@@ -166,10 +166,10 @@ function onRender(text: string) {
 </script>
 
 <template>
-  <div v-if="!authStore.token" class="w-full h-full">
-    <!-- <LoginTip /> -->
-  </div>
-  <div v-else class="w-full flex h-full" :style="getCurrClass">
+  <!-- <div v-if="!authStore.token" class="w-full h-full">
+    <LoginTip />
+  </div> -->
+  <div class="w-full flex h-full" :style="getCurrClass">
     <Sider :genText="genText" :loading="loading" @generate="onGenerate" @render="onRender" />
     <MindMap :genText="genText" :loading="loading" />
   </div>
