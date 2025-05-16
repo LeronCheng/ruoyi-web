@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<!--
+    Multiverse by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+    <title id="site-title"></title>
+</head>
+
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</body>
+<script>
+    // debugger
+    // 解析 URL 参数的简洁写法
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    debugger
+    if (token) {
+        // 有token表示登录
+        localStorage.setItem("TOKEN", token);
+        document.body.innerHTML = `<h2>登录成功，Token 已获取</h2>`;
+        window.location.href = "http://lwmes.carbononegroup.com:6039";
+    } else {
+        // 接收重定向code
+        let appid = "ww7a0622f0065f2cd6";
+        let redirectUri = "http://lwmes.carbononegroup.com:6039/api/wx/cp/weChat/login"
+        let state = "cone-ai"
+        let agentId = "1000081"
+        let scope = "snsapi_privateinfo"
+        let getCodeUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}&agentid=${agentId}#wechat_redirect`
+        window.location.href = getCodeUrl
+        // console.log("1、客户端拉起授权页面URL: ", getCodeUrl)
+        // axios.get("http://localhost:1002/api/wx/cp/weChat/login").then((res) => {
+        //     debugger
+        //     console.log("res: ", res)
+        //     window.location.href = res.data
+        // });
+
+    }
+
+
+
+
+
+
+
+
+
+    // 解析 URL 参数的简洁写法
+
+
+    // // 打印或使用 token
+    // console.log('接收到的 token:', token);
+
+    // // 示例：将 token 显示在页面上
+    // if (token) {
+    //     document.body.innerHTML += `<p>欢迎，token: ${token}</p>`;
+    // } else {
+    //     document.body.innerHTML += `<p>未获取到 token</p>`;
+    // }
+    // if (token) {
+    //     // 可将 token 保存到本地存储或发起后续 API 请求
+    //     localStorage.setItem("TOKEN", token);
+    //     document.body.innerHTML = `<h2>登录成功，Token 已获取</h2>`;
+    //     window.location.href = "http://localhost:1002";
+    // } else {
+    //     document.body.innerHTML = `<h2>未能获取 token，请重新登录</h2>`;
+    // }
+</script>
+
+</html>

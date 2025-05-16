@@ -44,7 +44,7 @@ export function createLocalStorage(options?: { expire?: number | null }) {
   }
 
   function remove(key: string) {
-    window.localStorage.removeItem(key)
+    // window.localStorage.removeItem(key)
   }
 
   function clear() {
