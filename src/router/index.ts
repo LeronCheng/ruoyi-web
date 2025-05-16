@@ -125,19 +125,19 @@ const routes: RouteRecordRaw[] = [
     ],
   },
 
-	{
-		path: "/music",
-		name: "Music",
-		component: musiclayout,
-		redirect: "/music/index",
-		children: [
-			{
-				path: "/music/:uuid?",
-				name: "music",
-				component: () => import("@/views/suno/music.vue"),
-			},
-		],
-	},
+	// {
+	// 	path: "/music",
+	// 	name: "Music",
+	// 	component: musiclayout,
+	// 	redirect: "/music/index",
+	// 	children: [
+	// 		{
+	// 			path: "/music/:uuid?",
+	// 			name: "music",
+	// 			component: () => import("@/views/suno/music.vue"),
+	// 		},
+	// 	],
+	// },
 
   {
     path: '/store',

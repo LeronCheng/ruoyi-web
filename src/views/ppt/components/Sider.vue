@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { defineAsyncComponent, computed, ref, watch, onMounted } from 'vue'
 import { NButton, NInput, NTabs, NTabPane, NRadioGroup, NRadio, NRadioButton } from 'naive-ui'
+import axios from '@/utils/request/axios'
+
+import { getToken } from '@/store/modules/auth/helper'
 // import Avatar from './Avatar.vue'
 
 const props = defineProps<{
@@ -25,6 +28,7 @@ const gen = ref('')
 const selectedModel = ref('claude')
 const selectedColor = ref('蓝色')
 const showHistory = ref(false)
+const historyLoading = ref(false)
 
 const colorOptions = [
   { label: '红色', value: '红色', bg: '#ffebee', dot: '#f44336' },
@@ -36,20 +40,20 @@ const colorOptions = [
   { label: '紫色', value: '紫色', bg: '#f3e5f5', dot: '#9c27b0' }
 ]
 
-const options = [
+const historyOption = ref([
   {
     prompt: '番茄炒蛋怎么做',
     pptValue:
       '<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect width="1280" height="720" fill="#003366"/><!-- Title --><text x="640" y="100" font-family="Arial" font-size="48" font-weight="bold" fill="#FFFFFF" text-anchor="middle">经典家常菜:番茄炒蛋</text><text x="640" y="150" font-family="Arial" font-size="24" fill="#FFFFFF" text-anchor="middle">简单易学的高营养家常菜制作指南</text><rect x="80" y="200" width="1120" height="400" rx="10" ry="10" fill="#FFFFFF" fill-opacity="0.9"/><rect x="120" y="240" width="300" height="340" rx="5" ry="5" fill="#F5F5F5"/> <text x="270" y="270" font-family="Arial" font-size="24" font-weight="bold" fill="#003366" text-anchor="middle">食材准备</text><circle cx="150" cy="310" r="8" fill="#FF6B6B"/><text x="170" y="315" font-family="Arial" font-size="18" fill="#333333">番茄 2-3个 (约300g)</text><circle cx="150" cy="350" r="8" fill="#FFD166"/><text x="170" y="355" font-family="Arial" font-size="18" fill="#333333">鸡蛋 3-4个</text><circle cx="150" cy="390" r="8" fill="#06D6A0"/><text x="170" y="395" font-family="Arial" font-size="18" fill="#333333">葱花 适量</text><circle cx="150" cy="430" r="8" fill="#118AB2"/><text x="170" y="435" font-family="Arial" font-size="18" fill="#333333">盐 1/2茶匙</text><circle cx="150" cy="470" r="8" fill="#073B4C"/><text x="170" y="475" font-family="Arial" font-size="18" fill="#333333">糖 1/4茶匙(可选)</text><circle cx="150" cy="510" r="8" fill="#EF476F"/><text x="170" y="515" font-family="Arial" font-size="18" fill="#333333">食用油 2汤匙</text><rect x="500" y="240" width="660" height="340" rx="5" ry="5" fill="#F5F5F5"/><text x="780" y="270" font-family="Arial" font-size="24" font-weight="bold" fill="#003366" text-anchor="middle">制作步骤</text><rect x="520" y="300" width="40" height="40" rx="20" ry="20" fill="#003366"/> <text x="540" y="325" font-family="Arial" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="middle">1</text><text x="580" y="325" font-family="Arial" font-size="18" fill="#333333">番茄切块，鸡蛋打散加少许盐</text><rect x="520" y="360" width="40" height="40" rx="20" ry="20" fill="#003366"/><text x="540" y="385" font-family="Arial" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="middle">2</text><text x="580" y="385" font-family="Arial" font-size="18" fill="#333333">热锅凉油，倒入蛋液炒至凝固盛出</text><rect x="520" y="420" width="40" height="40" rx="20" ry="20" fill="#003366"/><text x="540" y="445" font-family="Arial" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="middle">3</text><text x="580" y="445" font-family="Arial" font-size="18" fill="#333333">重新热油，爆香葱花，下番茄翻炒</text><rect x="520" y="480" width="40" height="40" rx="20" ry="20" fill="#003366"/><text x="540" y="505" font-family="Arial" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="middle">4</text><text x="580" y="505" font-family="Arial" font-size="18" fill="#333333">番茄变软后加入盐、糖调味</text><rect x="520" y="540" width="40" height="40" rx="20" ry="20" fill="#003366"/><text x="540" y="565" font-family="Arial" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="middle">5</text><text x="580" y="565" font-family="Arial" font-size="18" fill="#333333">倒入炒好的鸡蛋，翻炒均匀即可出锅</text><text x="640" y="680" font-family="Arial" font-size="16" fill="#FFFFFF" text-anchor="middle">烹饪时间: 约10分钟 | 难度: ★☆☆☆☆ | 适合人群: 所有年龄段</text></svg>',
-    creatTime: '2025-05-15 16:19:11'
+    createTime: '2025-05-15 16:19:11'
   },
   {
     prompt: '番茄炒蛋怎么种植',
     pptValue:
       '<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><!-- Background --><rect width="1280" height="720" fill="white"/><!-- Header Bar --><rect width="1280" height="80" fill="#003366"/><text x="50" y="50" font-family="Arial" font-size="32" font-weight="bold" fill="white">番茄高效种植指南</text><!-- Main Content Sections --><g><!-- Section 1: 选种准备 --><rect x="50" y="120" width="340" height="250" fill="#f8f8f8" rx="5" ry="5" stroke="#003366" stroke-width="2"/><text x="70" y="150" font-family="Arial" font-size="22" font-weight="bold" fill="#003366">1. 选种准备</text><text x="80" y="185" font-family="Arial" font-size="18" fill="#333">• 选择适合当地气候的品种</text><text x="80" y="215" font-family="Arial" font-size="18" fill="#333">• 优质种子发芽率在85%以上</text><text x="80" y="245" font-family="Arial" font-size="18" fill="#333">• 提前20-30天育苗</text><text x="80" y="275" font-family="Arial" font-size="18" fill="#333">• 温度控制在22-26°C</text><text x="80" y="305" font-family="Arial" font-size="18" fill="#333">• 育苗基质pH值5.5-6.5</text><!-- Icon for Section 1 --><circle cx="340" cy="150" r="25" fill="#003366"/><text x="340" y="158" font-family="Arial" font-size="22" font-weight="bold" fill="white" text-anchor="middle">1</text></g><g><!-- Section 2: 土壤条件 --><rect x="470" y="120" width="340" height="250" fill="#f8f8f8" rx="5" ry="5" stroke="#003366" stroke-width="2"/><text x="490" y="150" font-family="Arial" font-size="22" font-weight="bold" fill="#003366">2. 土壤条件</text><text x="500" y="185" font-family="Arial" font-size="18" fill="#333">• 疏松肥沃、排水良好</text><text x="500" y="215" font-family="Arial" font-size="18" fill="#333">• 每亩施有机肥2000-3000kg</text><text x="500" y="245" font-family="Arial" font-size="18" fill="#333">• 土壤pH值5.5-7.0</text><text x="500" y="275" font-family="Arial" font-size="18" fill="#333">• 避免连作，轮作间隔2-3年</text><text x="500" y="305" font-family="Arial" font-size="18" fill="#333">• 建议进行土壤消毒</text><!-- Icon for Section 2 --><circle cx="760" cy="150" r="25" fill="#003366"/><text x="760" y="158" font-family="Arial" font-size="22" font-weight="bold" fill="white" text-anchor="middle">2</text></g><g><!-- Section 3: 种植管理 --><rect x="890" y="120" width="340" height="250" fill="#f8f8f8" rx="5" ry="5" stroke="#003366" stroke-width="2"/><text x="910" y="150" font-family="Arial" font-size="22" font-weight="bold" fill="#003366">3. 种植管理</text><text x="920" y="185" font-family="Arial" font-size="18" fill="#333">• 株距40-50cm，行距70-80cm</text><text x="920" y="215" font-family="Arial" font-size="18" fill="#333">• 遮阳度30-50%（夏季种植）</text><text x="920" y="245" font-family="Arial" font-size="18" fill="#333">• 定期摘除侧芽</text><text x="920" y="275" font-family="Arial" font-size="18" fill="#333">• 主蔓绑缚或支架引导生长</text><text x="920" y="305" font-family="Arial" font-size="18" fill="#333">• 控制植株高度1.5-2米</text><!-- Icon for Section 3 --><circle cx="1180" cy="150" r="25" fill="#003366"/><text x="1180" y="158" font-family="Arial" font-size="22" font-weight="bold" fill="white" text-anchor="middle">3</text></g><g><!-- Section 4: 水肥管理 --><rect x="50" y="400" width="520" height="250" fill="#f8f8f8" rx="5" ry="5" stroke="#003366" stroke-width="2"/><text x="70" y="430" font-family="Arial" font-size="22" font-weight="bold" fill="#003366">4. 水肥管理</text><text x="80" y="465" font-family="Arial" font-size="18" fill="#333">• 保持土壤湿润但避免积水</text><text x="80" y="495" font-family="Arial" font-size="18" fill="#333">• 采用滴灌技术节约用水增产20%</text><text x="80" y="525" font-family="Arial" font-size="18" fill="#333">• 结果期追施钾肥提高果实品质</text><text x="80" y="555" font-family="Arial" font-size="18" fill="#333">• 生长期氮磷钾比例为1:0.5:1.2</text><text x="80" y="585" font-family="Arial" font-size="18" fill="#333">• 分次施肥：定植后、开花前、结果期</text><!-- Icon for Section 4 --><circle cx="325" cy="430" r="25" fill="#003366"/><text x="325" y="438" font-family="Arial" font-size="22" font-weight="bold" fill="white" text-anchor="middle">4</text><!-- Water-Fertilizer Chart --><rect x="340" y="460" width="200" height="150" fill="white" stroke="#003366" stroke-width="1"/><line x1="340" y1="535" x2="540" y2="535" stroke="#003366" stroke-width="1"/><line x1="340" y1="610" x2="540" y2="610" stroke="#003366" stroke-width="1"/><line x1="340" y1="460" x2="340" y2="610" stroke="#003366" stroke-width="1"/><!-- Chart Bars --><rect x="360" y="475" width="30" height="60" fill="#003366"/><rect x="410" y="495" width="30" height="40" fill="#4682B4"/><rect x="460" y="485" width="30" height="50" fill="#5CACEE"/><rect x="360" y="550" width="30" height="45" fill="#003366"/><rect x="410" y="565" width="30" height="30" fill="#4682B4"/><rect x="460" y="550" width="30" height="45" fill="#5CACEE"/><text x="375" y="470" font-family="Arial" font-size="12" fill="#333">苗期</text><text x="425" y="470" font-family="Arial" font-size="12" fill="#333">花期</text><text x="475" y="470" font-family="Arial" font-size="12" fill="#333">果期</text><text x="325" y="535" font-family="Arial" font-size="12" fill="#333">水分</text><text x="325" y="580" font-family="Arial" font-size="12" fill="#333">肥料</text></g><g><!-- Section 5: 病虫害防治 --><rect x="630" y="400" width="600" height="250" fill="#f8f8f8" rx="5" ry="5" stroke="#003366" stroke-width="2"/><text x="650" y="430" font-family="Arial" font-size="22" font-weight="bold" fill="#003366">5. 病虫害防治</text><!-- Risk Table --><rect x="650" y="450" width="550" height="180" fill="white" stroke="#003366" stroke-width="1"/><!-- Table Headers --><rect x="650" y="450" width="170" height="40" fill="#003366"/><rect x="820" y="450" width="170" height="40" fill="#003366"/><rect x="990" y="450" width="210" height="40" fill="#003366"/><text x="735" y="475" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">常见问题</text><text x="905" y="475" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">风险等级</text><text x="1095" y="475" font-family="Arial" font-size="16" font-weight="bold" fill="white" text-anchor="middle">防治措施</text><!-- Row 1 --><rect x="650" y="490" width="170" height="35" fill="white" stroke="#003366" stroke-width="1"/><rect x="820" y="490" width="170" height="35" fill="white" stroke="#003366" stroke-width="1"/><rect x="990" y="490" width="210" height="35" fill="white" stroke="#003366" stroke-width="1"/><text x="735" y="512" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">晚疫病</text><rect x="860" y="500" width="90" height="15" fill="#FF0000" rx="5" ry="5"/><text x="1095" y="512" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">避免湿度，喷洒杀菌剂</text><!-- Row 2 --><rect x="650" y="525" width="170" height="35" fill="white" stroke="#003366" stroke-width="1"/><rect x="820" y="525" width="170" height="35" fill="white" stroke="#003366" stroke-width="1"/><rect x="990" y="525" width="210" height="35" fill="white" stroke="#003366" stroke-width="1"/><text x="735" y="547" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">粉虱</text><rect x="860" y="535" width="90" height="15" fill="#FFCC00" rx="5" ry="5"/><text x="1095" y="547" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">黄板诱捕，生物农药</text><!-- Row 3 --><rect x="650" y="560" width="170" height="35" fill="white" stroke="#003366" stroke-width="1"/><rect x="820" y="560" width="170" height="35" fill="white" stroke="#003366" stroke-width="1"/><rect x="990" y="560" width="210" height="35" fill="white" stroke="#003366" stroke-width="1"/><text x="735" y="582" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">叶霉病</text><rect x="860" y="570" width="90" height="15" fill="#FF0000" rx="5" ry="5"/><text x="1095" y="582" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">通风，杀菌剂预防喷洒</text><!-- Row 4 --><rect x="650" y="595" width="170" height="35" fill="white" stroke="#003366" stroke-width="1"/><rect x="820" y="595" width="170" height="35" fill="white" stroke="#003366" stroke-width="1"/><rect x="990" y="595" width="210" height="35" fill="white" stroke="#003366" stroke-width="1"/><text x="735" y="617" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">根结线虫</text><rect x="860" y="605" width="90" height="15" fill="#00CC00" rx="5" ry="5"/><text x="1095" y="617" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">轮作，土壤消毒</text><!-- Legend for Risk Levels --><rect x="1005" y="430" width="15" height="15" fill="#FF0000" rx="2" ry="2"/><text x="1025" y="443" font-family="Arial" font-size="12" fill="#333">高风险</text><rect x="1075" y="430" width="15" height="15" fill="#FFCC00" rx="2" ry="2"/><text x="1095" y="443" font-family="Arial" font-size="12" fill="#333">中风险</text><rect x="1145" y="430" width="15" height="15" fill="#00CC00" rx="2" ry="2"/><text x="1165" y="443" font-family="Arial" font-size="12" fill="#333">低风险</text></g><!-- Footer --><rect x="0" y="680" width="1280" height="40" fill="#003366"/><text x="640" y="705" font-family="Arial" font-size="14" fill="white" text-anchor="middle">番茄种植技术指南 - 基于农业专家建议整理</text></svg>',
-    creatTime: '2025-05-15 16:30:19'
+    createTime: '2025-05-15 16:30:19'
   }
-]
+])
 
 watch(
   () => props.genText,
@@ -58,6 +62,33 @@ watch(
   },
   { immediate: true }
 )
+
+async function getHistoryList() {
+  // 如果已经显示历史记录，则关闭它
+  if (showHistory.value) {
+    showHistory.value = false
+    return
+  }
+
+  // 显示加载中状态，并立即显示历史记录面板
+  historyLoading.value = true
+  showHistory.value = true
+
+  try {
+    const { data } = await axios.get('/system/pptHistory/list', {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: 'Bearer ' + getToken()
+      }
+    })
+    historyOption.value = data.rows
+  } catch (error) {
+    console.error('获取历史记录失败', error)
+  } finally {
+    // 无论成功失败，都关闭加载状态
+    historyLoading.value = false
+  }
+}
 
 function onReRender() {
   emit('render', gen.value)
@@ -195,12 +226,22 @@ onMounted(() => {
             </NRadioGroup>
           </div>
           <div class="relative">
-            <NButton @click="showHistory = !showHistory">历史记录</NButton>
+            <NButton @click="getHistoryList">历史记录</NButton>
             <div v-if="showHistory" class="absolute right-0 top-full mt-1 bg-white shadow-lg rounded-md p-2 z-10 w-64 max-h-80 overflow-y-auto">
-              <ul class="divide-y divide-gray-200">
-                <li v-for="(item, index) in options" :key="index" class="py-2 px-1 cursor-pointer hover:bg-gray-100" @click="handleSelect(item)">
+              <div v-if="historyLoading" class="flex justify-center items-center py-4">
+                <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="ml-2 text-gray-600">加载中...</span>
+              </div>
+              <div v-else-if="historyOption.length === 0" class="py-4 text-center text-gray-500">
+                暂无历史记录
+              </div>
+              <ul v-else class="divide-y divide-gray-200">
+                <li v-for="(item, index) in historyOption" :key="index" class="py-2 px-1 cursor-pointer hover:bg-gray-100" @click="handleSelect(item)">
                   <div class="font-medium text-gray-800 truncate">{{ item.prompt }}</div>
-                  <div class="text-sm text-gray-500">{{ item.creatTime }}</div>
+                  <div class="text-sm text-gray-500">{{ item.createTime }}</div>
                 </li>
               </ul>
             </div>
