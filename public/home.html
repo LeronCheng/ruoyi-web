@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入jweixin JS文件 -->
+    <script src="//res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <!-- 引入ajax调用文件 -->
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript">
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href.split("#")[0];
+            name = name.replace(/[\[\]]/g, '\\$&');
+            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+            const results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        $(function(){
+            console.log(window.location.href.split("#")[0]);
+            $.ajax({
+                url: "https://www.aaa.com/weChact/login",
+                data: {
+                    url: window.location.href.split("#")[0],
+                    code: getParameterByName('code',null)
+                },
+                type: "get",
+                success: function (res) {
+                    console.log('res------------->', res)
+                    if (res.success) {
+                        window.localStorage.setItem("token", res.data.token);
+                        window.localStorage.setItem("refresh_token", res.data.refresh_token);
+                        window.localStorage.setItem("expires", res.data.expires);
+                    }else{
+                        console.log(res.message);
+                    }
+                }
+            });
+        })
+    </script>
+    <title>站点首页</title>
+</head>
+<body>
+</body>
+</html>
