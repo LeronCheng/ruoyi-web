@@ -197,11 +197,11 @@ const handleSelect = (key: string) => {
           </n-tooltip>
         </a>
 
-        <a @click="urouter.push(`/mindmap`)" class=" router-link-exact-active h-12 w-12 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
+        <a @click="urouter.push(`/mindmap`)" class=" router-link-exact-active h-10 w-10 cursor-pointer rounded-xl bg-white duration-300 dark:bg-[#34373c] hover:bg-[#bbb] dark:hover:bg-[#555]">
           <n-tooltip placement="right" trigger="hover">
             <template #trigger>
               <div class="flex h-full justify-center items-center   py-1 flex-col">
-                <SvgIcon icon="icon-park-outline:ppt" class="text-3xl flex-1"></SvgIcon>
+                <SvgIcon icon="icon-park-outline:ppt" class="text-2xl flex-1"></SvgIcon>
               </div>
             </template>
             图表
