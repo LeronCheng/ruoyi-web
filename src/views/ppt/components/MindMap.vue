@@ -94,39 +94,39 @@ function downSvg() {
 
 async function downPPT() {
   try {
-    // 创建PPT实例
-    const pptx = new PptxGenJS()
-
-    // 设置幻灯片尺寸为16:9
-    pptx.layout = 'LAYOUT_16x9'
-
-    // 添加新的空白幻灯片
-    const slide = pptx.addSlide()
-
     // 获取SVG元素
     if (!pptContainer.value) return
     const svgElement = pptContainer.value.querySelector('svg')
     if (!svgElement) return
+    
     // 获取SVG元素的字符串
     const svgString = new XMLSerializer().serializeToString(svgElement)
 
-    // 将SVG转换为base64格式
-    const base64Data = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgString)))}`
-    console.log(base64Data)
-
-    // 将SVG添加到幻灯片，并设置铺满整个幻灯片
-    slide.addImage({
-      data: base64Data,
-      x: 0,
-      y: 0,
-      w: '100%',
-      h: '100%'
+    // 调用后端API转换SVG为PPT
+    const response = await fetch('/system/pptHistory/convertSvgToPpt', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: svgString
     })
 
-    // 保存PPT文件
-    await pptx.writeFile({ fileName: '示例.pptx' })
+    if (!response.ok) {
+      throw new Error('转换失败')
+    }
 
-    console.log('PPT生成成功')
+    // 获取blob数据
+    const blob = await response.blob()
+    
+    // 创建下载链接
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = '示例.pptx'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
   } catch (error) {
     console.error('生成PPT时出错:', error)
   }
