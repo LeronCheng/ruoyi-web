@@ -275,7 +275,7 @@ onMounted(() => {
       </NButton>
     </div>
 
-    <div class="mt-6">
+    <!-- <div class="mt-6">
       <div class="flex flex-wrap justify-between items-center mb-2">
         <div class="flex items-center gap-1">
           <span>输出内容</span>
@@ -284,7 +284,7 @@ onMounted(() => {
         <NButton secondary size="tiny" type="primary" @click="onReRender">重新渲染</NButton>
       </div>
     </div>
-    <NInput v-model:value="gen" placeholder="生成的HTML格式的PPT内容" :rows="16" type="textarea" />
+    <NInput v-model:value="gen" placeholder="生成的HTML格式的PPT内容" :rows="16" type="textarea" /> -->
   </div>
 </template>
 
