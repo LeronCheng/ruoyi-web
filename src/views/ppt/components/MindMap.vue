@@ -3,6 +3,7 @@ import PptxGenJS from 'pptxgenjs'
 import { nextTick, onMounted, ref, watch, onUnmounted } from 'vue'
 import { NButton } from 'naive-ui'
 import { downloadSvg } from '@/utils/downloadFile'
+import request from '@/utils/request/req'
 
 const props = defineProps({
   genText: {
@@ -103,23 +104,15 @@ async function downPPT() {
     const svgString = new XMLSerializer().serializeToString(svgElement)
 
     // 调用后端API转换SVG为PPT
-    const response = await fetch('/system/pptHistory/convertSvgToPpt', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: svgString
+    const response = await request({
+      url: '/system/pptHistory/convertSvgToPpt',
+      method: 'post',
+      data: svgString,
+      responseType: 'blob'
     })
 
-    if (!response.ok) {
-      throw new Error('转换失败')
-    }
-
-    // 获取blob数据
-    const blob = await response.blob()
-    
     // 创建下载链接
-    const url = window.URL.createObjectURL(blob)
+    const url = window.URL.createObjectURL(response)
     const link = document.createElement('a')
     link.href = url
     link.download = '示例.pptx'
