@@ -100,19 +100,25 @@ async function downPPT() {
     const svgElement = pptContainer.value.querySelector('svg')
     if (!svgElement) return
     
-    // 获取SVG元素的字符串
-    const svgString = new XMLSerializer().serializeToString(svgElement)
+    // 获取SVG元素的字符串，使用XMLSerializer确保完整序列化
+    const svgString = props.genText
+    
+    // 打印SVG内容用于调试
+    console.log('发送的SVG内容:', svgString)
 
     // 调用后端API转换SVG为PPT
     const response = await request({
       url: '/system/pptHistory/convertSvgToPpt',
       method: 'post',
       data: svgString,
+      headers: {
+        'Content-Type': 'text/plain;charset=UTF-8'
+      },
       responseType: 'blob'
     })
 
     // 创建下载链接
-    const url = window.URL.createObjectURL(response)
+    const url = window.URL.createObjectURL(response.data)
     const link = document.createElement('a')
     link.href = url
     link.download = '示例.pptx'
