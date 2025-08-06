@@ -9,7 +9,7 @@ export interface KnowledgeReq {
 }
 
 export interface KnowledgeDelReq {
-	kid: string; // 附件id
+	id: string; // 附件id
 }
 
 export interface KnowledgeDetailDelReq {
@@ -25,10 +25,19 @@ export interface SimpleGenerate {
 	text: string;
 }
 
-export function getKnowledge() {
+export function getKnowledge(pageNum: number, pageSize: number) {
 	return request({
 		url: "/knowledge/list",
 		method: "get",
+		params: { pageNum, pageSize },
+	});
+}
+
+export function getKnowledgeByRole(pageNum: number, pageSize: number) {
+	return request({
+		url: "/knowledge/listByRole",
+		method: "get",
+		params: { pageNum, pageSize },
 	});
 }
 
@@ -42,7 +51,7 @@ export function createKnowledgeReq(params: KnowledgeReq) {
 
 export function delKnowledge(params: KnowledgeDelReq) {
 	return request({
-		url: "/knowledge/remove/" + params.kid,
+		url: "/knowledge/remove/" + params.id,
 		method: "post",
 	});
 }
